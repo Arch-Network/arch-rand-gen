@@ -1,0 +1,16 @@
+[package]
+name = "e2e-tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+oracle-program = { path = "../oracle-program", features = ["no-entrypoint"] }
+shared         = { path = "../shared" }
+arch_sdk       = { path = "../../arch-network/sdk" }
+borsh          = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+[lib]
+path = "src/lib.rs"

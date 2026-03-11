@@ -1,0 +1,11 @@
+[package]
+name = "vrf-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+curve25519-dalek = { version = "4", default-features = false, features = ["alloc"] }
+sha2 = { version = "0.10", default-features = false }
+
+[dev-dependencies]
+curve25519-dalek = { version = "4", default-features = false, features = ["alloc"] }

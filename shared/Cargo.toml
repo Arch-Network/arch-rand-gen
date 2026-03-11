@@ -1,0 +1,13 @@
+[package]
+name = "shared"
+version = "0.1.0"
+edition = "2021"
+
+# on-chain programs import shared with `features = ["on-chain"]` to exclude
+# anything that requires std (network URLs, file I/O, etc.)
+[features]
+default = []
+on-chain = []
+
+[lib]
+crate-type = ["lib"]

@@ -1,0 +1,17 @@
+[package]
+name = "oracle-program"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = []
+no-entrypoint = []
+
+[dependencies]
+arch_program = "0.6.2"
+vrf-core     = { path = "../vrf-core" }
+borsh        = { version = "1", default-features = false }
+shared       = { path = "../shared", features = ["on-chain"] }
+
+[lib]
+crate-type = ["cdylib", "lib"]

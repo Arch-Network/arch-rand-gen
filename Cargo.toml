@@ -1,0 +1,3 @@
+[workspace]
+members = ["vrf-core", "shared", "oracle-program", "server", "e2e-tests"]
+resolver = "2"
