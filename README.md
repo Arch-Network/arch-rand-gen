@@ -225,6 +225,11 @@ The `FulfillRequest` instruction runs `ecvrf_verify` inside the RBPF VM to confi
 
 It is technically possible for a caller program to re-verify the proof on-chain by importing `vrf-core` and calling `ecvrf_verify` directly. However, the full RFC 9381 ECVRF verification involves several Edwards25519 point decompressions, scalar multiplications, and a hash-to-curve operation, which together consume well over 1.4 million compute units — exceeding the current per-transaction CU budget. **On-chain re-verification by consumer programs is therefore not practical at this time.** Off-chain verification (see below) is the recommended approach for provably-fair auditing.
 
+For the remaining production-readiness work, including decentralization,
+request expiry/refunds, durable server processing, account cleanup, dynamic
+fees, key rotation, monitoring, and audit requirements, see
+[`docs/production-hardening.md`](docs/production-hardening.md).
+
 ---
 
 ## Provably fair verification
