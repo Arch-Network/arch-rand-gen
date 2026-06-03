@@ -279,4 +279,4 @@ Your program's callback entry point receives `callback_disc ++ beta` as instruct
 
 - [RFC 9381 — Verifiable Random Functions (VRFs)](https://datatracker.ietf.org/doc/html/rfc9381)
 - [Arch Network documentation](https://docs.arch.network)
-- [Arch Network Explorer (testnet)](https://explorer.test.arch.network)
+- [Arch Network Explorer](https://explorer.arch.network)

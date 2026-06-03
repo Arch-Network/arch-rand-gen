@@ -4,5 +4,5 @@
 pub const ARCH_RPC_TESTNET: &str = "https://rpc.testnet.arch.network";
 pub const ARCH_RPC_MAINNET: &str = "https://rpc.arch.network";
 
-pub const ARCH_EXPLORER_TESTNET: &str = "https://explorer.test.arch.network";
+pub const ARCH_EXPLORER_TESTNET: &str = "https://explorer.arch.network";
 pub const ARCH_EXPLORER_MAINNET: &str = "https://explorer.arch.network";
