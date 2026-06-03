@@ -13,6 +13,13 @@ pub const ORACLE_ARCH_PUBKEY: [u8; 32] = [
     44, 107, 68, 100, 155, 151, 239, 121, 170, 148, 53,
 ];
 
+/// Arch (secp256k1) pubkey of the treasury account — receives RequestRandomness fees.
+/// Set to the pubkey from $HOME/.arch/treasury.key.
+pub const ORACLE_TREASURY_PUBKEY: [u8; 32] = [
+    43, 38, 115, 65, 178, 79, 221, 43, 146, 247, 10, 159, 138, 25, 38, 166, 119, 83, 58, 180, 110,
+    44, 107, 68, 100, 155, 151, 239, 121, 170, 148, 53,
+];
+
 /// Lamports charged per randomness request.
 /// Computed by `shared::fees::calculate_oracle_fee` — see fees.rs for the breakdown.
 pub use crate::fees::ORACLE_FEE;

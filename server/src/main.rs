@@ -12,6 +12,7 @@ use arch_sdk::{
 };
 use bitcoin::key::UntweakedKeypair;
 use oracle_program::instruction::OracleInstruction;
+use shared::keys::ORACLE_TREASURY_PUBKEY;
 use tracing::{error, info, warn};
 use vrf_core::ecvrf_prove;
 
@@ -275,6 +276,10 @@ async fn main() {
         .expect("failed to load oracle_program.key");
     let (treasury_keypair, treasury_pubkey) =
         with_secret_key_file(&key(TREASURY_KEY_FILE)).expect("failed to load treasury.key");
+
+    if treasury_pubkey.serialize() != ORACLE_TREASURY_PUBKEY {
+        panic!("treasury.key does not match ORACLE_TREASURY_PUBKEY in shared/src/keys.rs");
+    }
 
     let oracle_vrf_sk: [u8; 32] = std::fs::read(key(ORACLE_ED_KEY_FILE))
         .expect("failed to read .oracle_ed.key — run the generate_oracle_ed_key test first")

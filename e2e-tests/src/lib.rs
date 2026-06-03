@@ -25,7 +25,7 @@ pub mod tests {
         instruction::OracleInstruction,
         state::{RequestStatus, VrfRequest, REQUEST_DISCRIMINATOR},
     };
-    use shared::keys::ORACLE_FEE;
+    use shared::keys::{ORACLE_FEE, ORACLE_TREASURY_PUBKEY};
     use shared::seeds::VRF_REQ_SEED;
 
     /// Path to the compiled oracle program SBF binary.
@@ -114,6 +114,11 @@ pub mod tests {
         let treasury_key_path = format!("{}/treasury.key", arch_dir);
         let (_, oracle_treasury_pubkey) = with_secret_key_file(&treasury_key_path)
             .expect("failed to load/generate treasury keypair");
+        assert_eq!(
+            oracle_treasury_pubkey.serialize(),
+            ORACLE_TREASURY_PUBKEY,
+            "treasury.key must match ORACLE_TREASURY_PUBKEY in shared/src/keys.rs"
+        );
         println!("oracle_treasury: {}", oracle_treasury_pubkey);
         println!("oracle_fee:      {} lamports", ORACLE_FEE);
 
