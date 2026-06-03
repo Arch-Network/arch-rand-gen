@@ -7,7 +7,7 @@ pub enum OracleInstruction {
     /// Accounts:
     ///   0. `[signer, writable]` fee_payer     — pays PDA rent + oracle fee
     ///   1. `[writable]`         request_pda   — created by this instruction
-    ///   2. `[writable]`         oracle_treasury — receives oracle fee
+    ///   2. `[writable]`         oracle_treasury — must match ORACLE_TREASURY_PUBKEY
     ///   3. `[]`                 system_program
     RequestRandomness {
         nonce: u64,
@@ -18,7 +18,7 @@ pub enum OracleInstruction {
     },
 
     /// Fulfill a pending randomness request.
-    /// Derives beta via ecvrf_proof_to_hash, stores pi and result in the account,
+    /// Verifies pi against ORACLE_ED_PUBKEY and the request seed, stores pi and result,
     /// then CPIs into the callback program with accounts[3..] forwarded as extras.
     ///
     /// Accounts:

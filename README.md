@@ -78,7 +78,7 @@ Crate used by both on-chain and off-chain code. Gated behind `features = ["on-ch
 
 | Module | Contents |
 |---|---|
-| `keys` | `ORACLE_ED_PUBKEY` (Ed25519, for VRF), `ORACLE_ARCH_PUBKEY` (secp256k1, for tx signing) |
+| `keys` | `ORACLE_ED_PUBKEY` (Ed25519, for VRF), `ORACLE_ARCH_PUBKEY` (secp256k1, for tx signing), `ORACLE_TREASURY_PUBKEY` (secp256k1, fee recipient) |
 | `fees` | `ORACLE_FEE` — lamports charged per request |
 | `seeds` | `VRF_REQ_SEED` — PDA seed prefix |
 | `network` | Testnet / mainnet RPC + explorer URLs |
@@ -135,7 +135,7 @@ The oracle needs two keypairs: an Arch secp256k1 keypair (for signing transactio
 make keygen
 ```
 
-The `keygen` target runs an ignored test that writes `~/.arch/.oracle_ed.key` and prints the matching `ORACLE_ED_PUBKEY` constant. Paste that constant into `shared/src/keys.rs` before building the on-chain program.
+The `keygen` target runs an ignored test that writes `~/.arch/.oracle_ed.key` and prints the matching `ORACLE_ED_PUBKEY` constant. Paste that constant into `shared/src/keys.rs` before building the on-chain program. The Arch oracle signer and treasury pubkeys are also pinned in `shared/src/keys.rs`; make sure `ORACLE_ARCH_PUBKEY` matches `~/.arch/oracle.key` and `ORACLE_TREASURY_PUBKEY` matches `~/.arch/treasury.key`.
 
 ### 2. Build
 
@@ -225,6 +225,11 @@ The `FulfillRequest` instruction runs `ecvrf_verify` inside the RBPF VM to confi
 
 It is technically possible for a caller program to re-verify the proof on-chain by importing `vrf-core` and calling `ecvrf_verify` directly. However, the full RFC 9381 ECVRF verification involves several Edwards25519 point decompressions, scalar multiplications, and a hash-to-curve operation, which together consume well over 1.4 million compute units — exceeding the current per-transaction CU budget. **On-chain re-verification by consumer programs is therefore not practical at this time.** Off-chain verification (see below) is the recommended approach for provably-fair auditing.
 
+For the remaining production-readiness work, including decentralization,
+request expiry/refunds, durable server processing, account cleanup, dynamic
+fees, key rotation, monitoring, and audit requirements, see
+[`docs/production-hardening.md`](docs/production-hardening.md).
+
 ---
 
 ## Provably fair verification
@@ -252,7 +257,7 @@ let ix = Instruction {
     accounts: vec![
         AccountMeta::new(fee_payer,       true),   // signer, writable
         AccountMeta::new(request_pda,     false),  // writable, new
-        AccountMeta::new(oracle_treasury, false),  // writable
+        AccountMeta::new(oracle_treasury, false),  // writable; must match ORACLE_TREASURY_PUBKEY
         AccountMeta::new_readonly(system_program::ID, false),
     ],
     data: borsh::to_vec(&OracleInstruction::RequestRandomness {

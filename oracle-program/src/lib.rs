@@ -18,7 +18,7 @@ use error::OracleError;
 use instruction::OracleInstruction;
 use state::{RequestStatus, VrfRequest, REQUEST_DISCRIMINATOR};
 
-pub use shared::keys::{ORACLE_ARCH_PUBKEY, ORACLE_ED_PUBKEY, ORACLE_FEE};
+pub use shared::keys::{ORACLE_ARCH_PUBKEY, ORACLE_ED_PUBKEY, ORACLE_FEE, ORACLE_TREASURY_PUBKEY};
 use shared::seeds::VRF_REQ_SEED;
 
 #[cfg(not(any(test, feature = "no-entrypoint")))]
@@ -80,6 +80,11 @@ fn process_request_randomness(
         request_pda.key,
         oracle_treasury.key,
     );
+
+    if oracle_treasury.key.serialize() != ORACLE_TREASURY_PUBKEY {
+        msg!("RequestRandomness: invalid oracle treasury");
+        return Err(OracleError::InvalidOracleTreasury.into());
+    }
 
     let nonce_bytes = nonce.to_le_bytes();
     let seeds: &[&[u8]] = &[VRF_REQ_SEED, fee_payer.key.as_ref(), &nonce_bytes, &[bump]];
@@ -203,11 +208,10 @@ fn process_fulfill_request(accounts: &[AccountInfo], pi: [u8; 80]) -> Result<(),
         return Err(OracleError::RequestNotPending.into());
     }
 
-    msg!("FulfillRequest: deriving beta via ecvrf_proof_to_hash");
+    msg!("FulfillRequest: verifying VRF proof");
 
-    // Derive beta from Gamma (trust-based; oracle signer auth ensures authenticity).
-    // The stored pi allows full off-chain verification by anyone.
-    let beta = vrf_core::ecvrf_proof_to_hash(&pi).map_err(OracleError::CryptoError)?;
+    let beta = vrf_core::ecvrf_verify(&ORACLE_ED_PUBKEY, &req.seed, &pi)
+        .map_err(OracleError::CryptoError)?;
 
     req.result = beta;
     req.pi = pi;

@@ -9,6 +9,7 @@ pub enum OracleError {
     // ── RequestRandomness ────────────────────────────────────────────────
     PdaCreationFailed,
     AccountSerializeFailed,
+    InvalidOracleTreasury,
 
     // ── FulfillRequest — oracle authority ───────────────────────────────
     InvalidOracleSigner,
@@ -34,6 +35,7 @@ impl From<OracleError> for ProgramError {
             OracleError::InvalidInstructionData => 0,
             OracleError::PdaCreationFailed => 1,
             OracleError::AccountSerializeFailed => 2,
+            OracleError::InvalidOracleTreasury => 15,
             OracleError::InvalidOracleSigner => 3,
             OracleError::AccountDeserializeFailed => 4,
             OracleError::WrongDiscriminator => 5,
