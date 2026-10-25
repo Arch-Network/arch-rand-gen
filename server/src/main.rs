@@ -52,7 +52,25 @@ pub fn create_ed_secret_key_and_save(path: &std::path::Path) -> std::io::Result<
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)?;
     }
-    std::fs::write(path, &bytes)?;
+    // Create the key file with owner-only permissions (0o600) instead of the
+    // umask default; a secret key file must not be world/group readable (audit cleanup).
+    #[cfg(unix)]
+    {
+        use std::io::Write;
+        use std::os::unix::fs::OpenOptionsExt;
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(path)?;
+        file.write_all(&bytes)?;
+        file.flush()?;
+    }
+    #[cfg(not(unix))]
+    {
+        // Non-unix platforms have no POSIX file modes; fall back to a plain write.
+        std::fs::write(path, &bytes)?;
+    }
     Ok(bytes)
 }
 
